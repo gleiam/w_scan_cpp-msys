@@ -202,3 +202,7 @@
   - {Lat,Long} might be negative
   - DiseqcRotorUsals() needs to accept negtive values.
 
+20260515:
+-------------------------------------------------------------------------------
+* fix FTBC on wirbelscan plugin due to gcc-16 changes -> bump wirbelscan version
+* change wirbelscan download location, now use wirbelscan-dev tag archive.

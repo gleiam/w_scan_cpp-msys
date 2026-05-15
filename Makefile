@@ -6,7 +6,7 @@
 # *****************************************************************************/
 BINARY = w_scan_cpp
 
-WIRBELSCAN_VERSION = wirbelscan-2024.09.15
+WIRBELSCAN_VERSION = 2026.05.15
 
 # original git repo seems to be stale.
 #SATIP_GIT_ADDR = https://github.com/rofafor/vdr-plugin-satip
@@ -181,9 +181,8 @@ vdrlibsidir =$(vdrdir)/libsi
 pluginsrcdir = $(vdrdir)/PLUGINS/src
 pluginlibdir = $(vdrdir)/PLUGINS/lib
 
-WIRBELSCAN_TARBALL = vdr-$(WIRBELSCAN_VERSION).tgz
-WIRBELSCAN_DL_ADDR = https://www.gen2vdr.de/wirbel/wirbelscan/$(WIRBELSCAN_TARBALL)
-
+WIRBELSCAN_TARBALL = $(WIRBELSCAN_VERSION).tar.gz
+WIRBELSCAN_DL_ADDR = https://github.com/wirbel-at-vdr-portal/wirbelscan-dev/archive/refs/tags/$(WIRBELSCAN_TARBALL)
 
 
 
@@ -310,7 +309,7 @@ $(pluginsrcdir)/satip: $(pluginsrcdir)/satip.git
 $(pluginsrcdir)/wirbelscan:
 	$(CD) $(pluginsrcdir) && $(WGET) $(WIRBELSCAN_DL_ADDR)
 	$(CD) $(pluginsrcdir) && $(TAR) xf $(WIRBELSCAN_TARBALL) && $(RM) -f $(WIRBELSCAN_TARBALL)
-	$(CD) $(pluginsrcdir) && $(LN) -s $(WIRBELSCAN_VERSION) wirbelscan
+	$(CD) $(pluginsrcdir) && $(LN) -s wirbelscan-dev-$(WIRBELSCAN_VERSION) wirbelscan
 
 
 .PHONY: clean mrproper Version.h
