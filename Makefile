@@ -13,6 +13,7 @@ WIRBELSCAN_VERSION = 2026.05.15
 
 SATIP_GIT_ADDR = https://github.com/wirbel-at-vdr-portal/vdr-plugin-satip.git
 
+THIRDPARTY_GIT_ADDR = https://github.com/wirbel-at-vdr-portal/w_scan_cpp-third_party_packages.git
 
 
 #/******************************************************************************
@@ -297,12 +298,14 @@ download: $(vdrdir) $(pluginsrcdir)/satip $(pluginsrcdir)/wirbelscan
 $(vdrdir):
 	$(GIT) clone git://git.tvdr.de/vdr.git
 	@$(RM) -rf $(vdrdir)/.git
+	@$(RM) -rf $(pluginsrcdir)
 	$(MKDIR_P) $(pluginsrcdir)
 	$(MKDIR_P) $(pluginlibdir)
 
 $(pluginsrcdir)/satip.git:
 	$(CD) $(pluginsrcdir) && $(GIT) clone $(SATIP_GIT_ADDR)
 	$(CD) $(pluginsrcdir) && $(LN) -sf vdr-plugin-satip satip
+	@$(RM) -rf $(pluginsrcdir)/vdr-plugin-satip/.git
 
 $(pluginsrcdir)/satip: $(pluginsrcdir)/satip.git
 
@@ -316,8 +319,7 @@ $(pluginsrcdir)/wirbelscan:
 clean:
 	@$(RM) -f $(LIBSI_OBJS) $(VDR_OBJS) $(OBJS) $(WIRBELSCAN_OBJS) $(SATIP_OBJS) $(BINARY) .dependencies
 	@$(RM) -rf $(vdrdir)/.git
-	@$(RM) -rf $(pluginsrcdir)/vdr-plugin-satip/.git
-	@$(RM) -rf MakeHeader.bin
+	@$(RM) -rf third_party_*
 
 mrproper: clean
 	@$(RM) -r $(vdrdir)
@@ -332,7 +334,10 @@ Version.h:
 
 version: Version.h
 
-dist: Version.h mrproper
+dist: dist-package dist-download
+
+dist-package: Version.h mrproper
+	@$(RM) -rf $(pluginsrcdir)/vdr-plugin-satip/doc/*.pdf
 	@-$(RM) -rf $(tmpdir)/$(PACKAGE)
 	@$(MKDIR_P) $(tmpdir)/$(PACKAGE)
 	@$(CP) -a * $(tmpdir)/$(PACKAGE)
@@ -340,9 +345,29 @@ dist: Version.h mrproper
 	@-$(RM) -rf $(tmpdir)/$(PACKAGE)
 	@echo Distribution package created as $(PACKAGE).tar.bz2
 
-dist-download: clean
+REQUIRED_OS_START := Linux From Scratch SVN-20
+
+dist-download: mrproper download
+	@$(RM) -rf $(pluginsrcdir)/vdr-plugin-satip/doc/*.pdf
 	@$(TAR) cfj third_party_$(VERSION).tar.bz2 ./vdr
 	@echo third party package created as third_party_$(VERSION).tar.bz2
+	@if [ -f /etc/os-release ]; then \
+		. /etc/os-release; \
+		case "$$PRETTY_NAME" in \
+			"$(REQUIRED_OS_START)"*) \
+				echo "upload new third_party_$(VERSION).tar.bz2 to github.."; \
+				$(GIT) clone $(THIRDPARTY_GIT_ADDR); \
+				$(CP) third_party_$(VERSION).tar.bz2 w_scan_cpp-third_party_packages; \
+				$(CD) w_scan_cpp-third_party_packages; \
+				$(GIT) add third_party_$(VERSION).tar.bz2; \
+				$(GIT) commit -m "add $(VERSION)"; \
+				$(GIT) push; \
+				$(CD) .. && $(RM) -rf {w_scan_cpp-third_party_packages,third_party_$(VERSION).tar.bz2}; \
+				;; \
+			*) ;; \
+		esac; \
+	fi
+
 
 binary: $(BINARY)
 	@$(STRIP) $(BINARY)
