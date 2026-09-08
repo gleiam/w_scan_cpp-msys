@@ -33,11 +33,9 @@ set "SATIP_SERVER=192.168.1.1|DVBC-4|FRITZBox"
 | 4 | librepfunc (statisch) | `tools/03-librepfunc.sh` |
 | 5 | Build + `--help`-Gate | `tools/04-build.sh` |
 | 6 | Paket `dist/w_scan_cpp-msys-x86_64/` | `tools/05-package.sh` |
-| 7 | femon-Verify (ein Transponder, ~40 s) | inline |
+| 7 | Smoke-Test: dist-`--help` + DLL-Herkunft (ohne Netz) | inline |
 
-Optionen: `--skip-install` (MSYS schon eingerichtet),
-`--skip-verify`, `--satip-server "IP|MODEL|DESC"`,
-`--verify-channel "VDR-Zeile"`, Env `SATIP_SERVER`/`VERIFY_CHANNEL`.
+Optionen: `--skip-install` (MSYS schon eingerichtet).
 
 Hinweise:
 
@@ -45,10 +43,16 @@ Hinweise:
   MSYS ggf. zweimal laufen lassen („restart required“).
 - Stufe 2 läuft bewusst nur auf pristine Quellen (kein `--forward`) – danach
   ist der Tree gepatcht, das ist normaler Pipeline-Zustand.
-- Stufe 7 stimmt per `-F` genau einen Transponder ab (Endlosschleife, wird per
-  `timeout` beendet, RC 124 erwartet) und verlangt `lock 1`. Ohne
-  `SATIP_SERVER` wird sie übersprungen. Beispiel-Referenz: `scan.txt`.
 - Logs landen in `logs/` (ausgeblendet, siehe unten).
+
+## Verify (separat, nicht Teil der Pipeline)
+
+`bash tools/verify-femon.sh` stimmt per `-F` genau einen Transponder ab
+(Endlosschleife, wird per `timeout` beendet, RC 124 erwartet) und verlangt
+`lock 1`. Braucht `SATIP_SERVER` (Env oder `--satip-server`
+`"IP|MODEL|DESC"`); optional `--verify-channel`, `--exe`, `--timeout`.
+Läuft später als eigener GitHub-Job, lokal nur zum Testen.
+Beispiel-Referenz: `scan.txt`.
 
 ## Repo-Hygiene
 
@@ -68,6 +72,7 @@ und ruft danach dieselbe Pipeline auf (`tools/build.sh --skip-install
 ## Werkzeuge (nicht Teil der Pipeline)
 
 - `tools/rtsp-tune-test.py` – reiner RTSP-Tune-Test eines Transponders.
+- `tools/verify-femon.sh` – separater Lock-Test eines Transponders (s. Verify).
 - `tools/ssdp-*.py` – SSDP-/M-SEARCH-Diagnose.
 - `tools/06-patches.sh` – Patches aus Diffs regenerieren (Dev).
 - `tools/firewall-rules.ps1` – Windows-Firewallregeln (als Admin).

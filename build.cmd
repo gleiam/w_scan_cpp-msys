@@ -1,7 +1,6 @@
 @echo off
 rem Einstieg in die Build-Pipeline ab Windows.
-rem Aufruf: build.cmd [--msys-root PFAD] [--skip-install] [--skip-verify]
-rem          [--satip-server "IP|MODEL|DESC"] [--verify-channel "VDR-Zeile"]
+rem Aufruf: build.cmd [--msys-root PFAD] [--skip-install]
 rem
 rem MSYS-Pfad, Prioritaet aufsteigend:
 rem   1. Standard C:\msys64

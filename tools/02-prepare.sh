@@ -36,11 +36,12 @@ if [ ! -s vendor/pugixml/pugixml.cpp ] && [ -f pugixml_1.16.orig.tar.gz ]; then
   echo "extrahiert aus Tarball (legacy)"
 fi
 ls -l vendor/pugixml
-count="$(ls vendor/pugixml | wc -l)"
-if [ "$count" -ne 3 ]; then
-  echo "FEHLER: vendor/pugixml enthaelt $count Dateien, erwartet 3"
-  exit 1
-fi
+for f in pugixml.cpp pugixml.hpp pugiconfig.hpp; do
+  if [ ! -s "vendor/pugixml/$f" ]; then
+    echo "FEHLER: vendor/pugixml/$f fehlt oder leer"
+    exit 1
+  fi
+done
 echo "PUGIXML_OK"
 
 echo "=== 3.4 Linux-Header-Shim ==="

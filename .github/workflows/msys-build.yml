@@ -37,7 +37,7 @@ jobs:
       - name: Pipeline (Patches, Vendor, librepfunc, Build, Gate, Paket)
         run: |
           set -euo pipefail
-          bash tools/build.sh --skip-install --skip-verify
+          bash tools/build.sh --skip-install
 
       - name: Paket-Metadaten anhaengen
         run: |

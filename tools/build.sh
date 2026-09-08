@@ -6,11 +6,12 @@
 # Direkt aus MSYS:  bash tools/build.sh [Optionen]
 #
 # Stufen: 1) MSYS-Pakete  2) Patches 101-112  3) Vendor/Hygiene
-#         4) librepfunc   5) Build (+Gate)     6) Paket  7) femon-Verify
+#         4) librepfunc   5) Build (+Gate)     6) Paket  7) Smoke-Test
 #
-# Konfiguration nur ueber Env/Flags, keine Pfade einchecken:
-#   SATIP_SERVER    z.B. "192.168.1.1|DVBC-4|FRITZBox" (leer = Verify wird uebersprungen)
-#   VERIFY_CHANNEL  VDR-Kanalzeile fuer den femon-Einzeltransponder-Test
+# KEIN Verify in der Pipeline: das laeuft separat (spaeter auf GitHub),
+# lokal bei Bedarf via:  bash tools/verify-femon.sh
+#
+# Konfiguration nur ueber Env/Flags, keine Pfade einchecken.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -18,22 +19,15 @@ cd "$ROOT"
 mkdir -p logs
 
 SKIP_INSTALL=0
-SKIP_VERIFY=0
-: "${SATIP_SERVER:=}"
-: "${VERIFY_CHANNEL:=test:610000:I0C0M64:C:6900:0:0:0:0:1:0:0:0}"
 
 usage() {
   sed -n '2,/^set -euo/p' "$0"
-  echo "Optionen: --skip-install  --skip-verify"
-  echo "          --satip-server \"IP|MODEL|DESC\"  --verify-channel \"VDR-Zeile\""
+  echo "Optionen: --skip-install"
 }
 
 while [ $# -gt 0 ]; do
   case "$1" in
     --skip-install) SKIP_INSTALL=1 ;;
-    --skip-verify) SKIP_VERIFY=1 ;;
-    --satip-server) SATIP_SERVER="${2:?Wert fehlt}"; shift ;;
-    --verify-channel) VERIFY_CHANNEL="${2:?Wert fehlt}"; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "FEHLER: unbekannte Option $1" >&2; usage >&2; exit 2 ;;
   esac
@@ -75,27 +69,25 @@ echo "===== [6/7] Paket (tools/05-package.sh) ====="
 bash tools/05-package.sh > logs/build-06-package.log 2>&1
 tail -3 logs/build-06-package.log
 
-if [ "$SKIP_VERIFY" -eq 1 ] || [ -z "$SATIP_SERVER" ]; then
-  echo "===== [7/7] femon-Verify uebersprungen (kein SATIP_SERVER / --skip-verify) ====="
-  echo "PIPELINE_OK (ohne Verify)"
-  exit 0
-fi
-
-echo "===== [7/7] femon-Verify: einzelner Transponder ====="
-echo "Kanal: $VERIFY_CHANNEL"
-set +e
-timeout 40 "$EXE" -f c -c DE -t --satip-server "$SATIP_SERVER" \
-  -F "$VERIFY_CHANNEL" > logs/build-07-verify.log 2>&1
-rc=$?
-set -e
-# femon laeuft als Endlosschleife -> RC 124 (timeout) ist das erwartete Ende
-if [ "$rc" -ne 124 ]; then
-  echo "FEHLER: femon endete mit RC=$rc statt 124 (siehe logs/build-07-verify.log)" >&2; exit 1
-fi
-grep -a "lock" logs/build-07-verify.log | tail -3
-if grep -aq "lock 1" logs/build-07-verify.log; then
-  echo "VERIFY_OK: Transponder lockt"
-else
-  echo "FEHLER: kein Lock (siehe logs/build-07-verify.log)" >&2; exit 1
-fi
+echo "===== [7/7] Smoke-Test (dist-Binary, ohne Netz) ====="
+DIST_EXE="dist/w_scan_cpp-msys-x86_64/w_scan_cpp.exe"
+[ -x "$DIST_EXE" ] || { echo "FEHLER: $DIST_EXE fehlt" >&2; exit 1; }
+"$DIST_EXE" --help > logs/build-07-smoke.log 2>&1
+grep -q "w_scan_cpp Version" logs/build-07-smoke.log
+echo "SMOKE_OK: dist --help laeuft"
+# msys-DLLs muessen im Paket liegen (selbständig), Rest nur aus System32
+ldd_ok=1
+while read -r dll target _; do
+  case "$dll" in
+    msys-*)
+      [ -f "dist/w_scan_cpp-msys-x86_64/$dll" ] || { echo "FEHLT im Paket: $dll"; ldd_ok=0; } ;;
+    *)
+      case "$target" in
+        /[Cc]/[Ww][Ii][Nn][Dd][Oo][Ww][Ss]/[Ss][Yy][Ss][Tt][Ee][Mm]32/*) ;;
+        *) echo "FREMD: $dll => $target"; ldd_ok=0 ;;
+      esac ;;
+  esac
+done < <(ldd "$DIST_EXE" | awk '/=>/{print $1, $3}')
+[ "$ldd_ok" -eq 1 ] || { echo "FEHLER: unerwartete DLL-Abhaengigkeit" >&2; exit 1; }
+echo "SMOKE_OK: Paket selbstaendig (msys-DLLs gebuendelt, Rest System32)"
 echo "PIPELINE_OK"
