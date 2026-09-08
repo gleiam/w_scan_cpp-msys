@@ -75,6 +75,12 @@ jobs:
     permissions:
       contents: write
     steps:
+      # --generate-notes braucht Git-Historie + Tags
+      - name: Checkout (fuer Release-Notes)
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
       - name: Artifact laden
         uses: actions/download-artifact@v4
         with:
