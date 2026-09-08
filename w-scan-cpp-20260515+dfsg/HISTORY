@@ -1,0 +1,208 @@
+'w_scan_cpp' History
+----------------------------------------
+
+20201224:
+-------------------------------------------------------------------------------
+* Initial Version.
+
+20210218:
+-------------------------------------------------------------------------------
+* add missing HISTORY file
+* checked function @ vdr-2.5.1: ok
+* Makefile
+  - target 'mrproper' now phony target.
+  - target 'dist' calls now mrproper and clean
+  - fix 'dist' target - 20201224 tarball was broken, all files without folder.
+* remove fribidi from list of requirements. Not in use.
+* w_scan_cpp now reports it's program version on start.
+* update wirbelscan version to 2021.02.18
+  - probably you want to call 'make mrproper' and 'make download'
+* give satip 3 secs extra time to detect devices. Sometimes the satip plugin
+  gave up too fast while reporting 'ready'. As a consequence, no devices
+  were found.
+
+20210331:
+-------------------------------------------------------------------------------
+* main.cpp
+   - print number of services and scan time after scan.
+   - move wait time for satip after WaitForAllDevicesReady
+* Helper.{cpp,h}
+   - IntToStr
+   - IntToHex
+* OutputFormats.cpp
+   - ini Format, sort list by UniqueTransponders to remove duplicates.
+* Satellites.{cpp,h}
+   - std::string GetSatelliteIdValue(int Id)
+* Makefile
+   - new Makefile, take care of INSTALLDIR and prefix
+   - replace $(PWD) by $(shell pwd) for debian/ubuntu packages
+   - new targets
+      - $(pluginsrcdir)/satip/satip.h (skip header if already there)
+      - printvars (debug - may be useful before make install)
+   - shorten compile messages for readability
+   - update to wirbelscan-2021.03.07, which
+      - adds some DVB-C freqs
+      - skips second DVB-C loop, if QAM_AUTO support
+* README
+   - add package hints for debian/ubuntu
+   - add hint, how to install in /usr: make prefix=/usr install
+   - Update satip upstream address to github
+
+20210512:
+-------------------------------------------------------------------------------
+* OutputFormats.cpp
+   - fix VLC output: Frequencies were rounded incorrectly.
+
+20210608:
+-------------------------------------------------------------------------------
+* CmdOpts.cpp
+   - change cmdline help to point on general SAT>IP page
+* Makefile
+   - fix variable man[1-5]dir
+   - add -DDISABLE_TEMPLATES_COLLIDING_WITH_STL for *.cpp files
+* doc/w_scan_cpp.1
+   - initial man page for w_scan_cpp
+
+20210718:
+-------------------------------------------------------------------------------
+* CmdOpts.cpp
+   - add new options:
+     --output-VLC-satip, generate VLC xspf playlist for SAT>IP
+     --sort-criteria, sort output as per file
+* doc/w_scan_cpp.1
+   - document new options
+* main.cpp
+   - print satip server address
+* Helpers.{h,cpp}
+   - add functions ReadFile, SVDRP
+* Makefile
+   - update to wirbelscan-2021.07.14
+   - remove a few non-Ascii chars
+   - silence find command
+   - create satip.h by extra binary instead of sed
+* OutputFormats.cpp
+   - PrintVLC
+     - fix ampersand in Name
+     - add missing </vlc:option> after Sat plp-id
+   - add PrintVLCsatip
+
+20210815:
+-------------------------------------------------------------------------------
+* Helpers.{h,cpp}
+   - add functions FloatToStr, ExpToStr
+* Femon.{h,cpp}, CmdOpts.{h,cpp}, doc/w_scan_cpp.1
+   - add new option --femon <VDR_CHANNEL>
+* Makefile
+   - add version target
+
+20211009:
+-------------------------------------------------------------------------------
+* main.cpp, Femon.cpp
+   - rename Sleep to milliSleep
+* helpers.{h,cpp}
+   - rename Sleep to milliSleep
+   - IntToHex now gets a int64_t
+* CmdOpts.cpp
+   - args -c, --country, -s, --satellite are now case insensitive,
+     to improve compat to my ancient w_scan syntax.
+* Makefile
+   - prepare for upcoming next wirbelscan version
+
+20211128:
+-------------------------------------------------------------------------------
+* Makefile
+   - check librepfunc availability and version, link to it.
+     Requires now at least librepfunc-1.1.0,
+     see https://github.com/wirbel-at-vdr-portal/librepfunc
+* CmdOpts.cpp
+   - replace split() by librepfunc SplitStr()
+* Countries.cpp
+   - replace split() by librepfunc SplitStr()
+* Femon.cpp
+   - replace milliSleep() by librepfunc mSleep()
+   - use FloatToStr() from librepfunc
+* Helpers.{h,cpp}
+   - remove split(), LowerCase(), UpperCase(), FrontFill(), BackFill(),
+     ToString(), IntToStr(), IntToHex(), FloatToStr(), ExpToStr(),
+     milliSleep(), ReadFile(), class cFileList, class File and use
+     librepfunc instead.
+* Library.cpp
+   - replace split() by librepfunc SplitStr()
+* Lnb.cpp
+   - replace split() by librepfunc SplitStr()
+   - fix C-Band and C-Band Multi LNB lower frequency range in comments
+* main.cpp
+   - replace split() by librepfunc SplitStr()
+   - replace milliSleep() by librepfunc mSleep()
+   - replace IntToStr() by librepfunc IntToStr()
+* OutputFormats.cpp
+   - replace std::to_string() by IntToStr()   
+* bump wirbelscan version to 2021.11.28
+* bump version to 20211128
+
+20211212:
+-------------------------------------------------------------------------------
+* Makefile
+   - add dependency checks for libjpeg, freetype2, fontconfig, pugixml
+* CmdOpts.cpp
+   - fix diseqc, initializing vdr/diseqc.c:CurrentDevices, without this change
+     any diseqc use was broken in w_scan_cpp
+* bump wirbelscan version to 2021.12.11
+* CmdOpts.cpp, Lnb.cpp
+   - commandline option '-l?' for printing LNB options was incomplete.
+     Fixing it.
+* bump version to 20211212
+
+20230604:
+-------------------------------------------------------------------------------
+* fix FTBC on wirbelscan plugin -> bump wirbelscan version
+
+20231015:
+-------------------------------------------------------------------------------
+* fix indent on w_scan XML output
+* fix satip-server commandline option
+* setting SAT>IP server quirk 0x08 now enables the use of RTP over TCP.
+  This allows to use SAT>IP servers, which are not in the same network, if the
+  server supports RTP over TCP. see option --satip-server and the README of
+  vdr-plugin-satip.
+  For example
+  w_scan_cpp -fs --satip --satip-server '192.168.88.22:554|DVBS2-1|MySvr:0x08'
+* add commandline option --satip-src
+* add service_list.dtd to documentation
+* fix on satip plugin
+   * circumvent FritzBox DVB-C RTCP firmware bug
+   * add missing brackets to allow src selection 
+* bump wirbelscan plugin to 2023.10.15
+   * use std::atomic<bool> for scanfilters instead of bool
+   * move {active,isActive} to end of scanfilters Action()
+   * early delete and set to nullptr any of the scanfilters
+     in statemachine.cpp (less memory required)
+   * detach aReceiver from dev, before deleting it
+
+20240915:
+-------------------------------------------------------------------------------
+* fix VLC output for Sat, VLC changed from MHz to Hz
+* add fix for w_scan XML output from Christoph Heitkamp
+* PrintVLC(), PrintXML(), PrintVLCsatip() now use XmlString() in texts
+  to convert quotation mark, ampersand, apostrophe, less-than sign,
+  greater-than sign to the five default XML char entities.
+* prefer StrToInt and LeftFill/RightFill in output formats
+* fix SRC parameter with VLC output for SAT>IP
+* include all service pids in the VLC SAT>IP output
+* PrintIni(): replace localtime() by TimeStr()
+* PrintInitial(): replace localtime() by TimeStr()
+* merged VLC output formats
+* fix FTBC on wirbelscan plugin due to vdr changes -> bump wirbelscan version
+
+20250615:
+-------------------------------------------------------------------------------
+* update wirbelscan
+* rotor usals:
+  - add missing cDiseqcPositioner
+  - {Lat,Long} might be negative
+  - DiseqcRotorUsals() needs to accept negtive values.
+
+20260515:
+-------------------------------------------------------------------------------
+* fix FTBC on wirbelscan plugin due to gcc-16 changes -> bump wirbelscan version
+* change wirbelscan download location, now use wirbelscan-dev tag archive.

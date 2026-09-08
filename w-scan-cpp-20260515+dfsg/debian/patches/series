@@ -1,0 +1,8 @@
+# From upstream
+
+# Pending
+
+# Debian specific
+101-makefile_verbose.patch
+102-makefile_libs_multiarch_install_dir.patch
+104-fix-groff-warning

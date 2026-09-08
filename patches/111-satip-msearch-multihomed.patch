@@ -1,0 +1,126 @@
+--- a/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/vdr-plugin-satip/msearch.c
++++ b/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/vdr-plugin-satip/msearch.c
+@@ -12,6 +12,9 @@
+ #include "poller.h"
+ #include "msearch.h"
+ 
++#include <ifaddrs.h>
++#include <net/if.h>
++
+ const char *cSatipMsearch::bcastAddressS = "239.255.255.250";
+ const char *cSatipMsearch::bcastMessageS = "M-SEARCH * HTTP/1.1\r\n"                  \
+                                            "HOST: 239.255.255.250:1900\r\n"           \
+@@ -23,14 +26,65 @@
+ : discoverM(discoverP),
+   bufferLenM(eProbeBufferSize),
+   bufferM(MALLOC(unsigned char, bufferLenM)),
+-  registeredM(false)
++  registeredM(false),
++  ifacesM()
+ {
+   if (bufferM)
+      memset(bufferM, 0, bufferLenM);
+   else
+      error("Cannot create Msearch buffer!");
+-  if (!Open(eDiscoveryPort, true))
++  if (!Open(eDiscoveryPort, true)) {
+      error("Cannot open Msearch port!");
++     }
++  else {
++     // Multihomed-Hosts (z.B. Hyper-V-Switches): Gruppe auf jedem
++     // lokalen Interface joinen, sonst bleibt der Empfang stumm.
++     ifacesM = LocalAddresses();
++     if (ifacesM.empty())
++        ifacesM.push_back("0.0.0.0");
++     for (size_t i = 0; i < ifacesM.size(); ++i) {
++         if (!JoinGroup(bcastAddressS, ifacesM[i].c_str()))
++            error("Cannot join Msearch group on %s!", ifacesM[i].c_str());
++         }
++     }
++}
++
++std::vector<std::string> cSatipMsearch::LocalAddresses(void)
++{
++  std::vector<std::string> result;
++  struct ifaddrs *addrs = NULL;
++  if (getifaddrs(&addrs) != 0) {
++     error("getifaddrs() failed: %s", strerror(errno));
++     return result;
++     }
++  for (struct ifaddrs *a = addrs; a; a = a->ifa_next) {
++      if (!a->ifa_addr || (a->ifa_addr->sa_family != AF_INET))
++         continue;
++      if (!(a->ifa_flags & IFF_UP) || (a->ifa_flags & IFF_LOOPBACK))
++         continue;
++      char buf[INET_ADDRSTRLEN] = { 0 };
++      const struct sockaddr_in *sin = reinterpret_cast<const struct sockaddr_in *>(a->ifa_addr);
++      if (!inet_ntop(AF_INET, &sin->sin_addr, buf, sizeof(buf)))
++         continue;
++      // Link-Local (APIPA) hat kein Routing ins LAN: kein SSDP sinnvoll.
++      uint32_t ip = ntohl(sin->sin_addr.s_addr);
++      if ((ip & 0xFFFF0000) == 0xA9FE0000)
++         continue;
++      std::string addr(buf);
++      bool known = false;
++      for (size_t i = 0; i < result.size(); ++i) {
++          if (result[i] == addr) {
++             known = true;
++             break;
++             }
++          }
++      if (!known) {
++         result.push_back(addr);
++         dbg_funcname("%s iface %s (%s)", __PRETTY_FUNCTION__, a->ifa_name, buf);
++         }
++      }
++  freeifaddrs(addrs);
++  return result;
+ }
+ 
+ cSatipMsearch::~cSatipMsearch()
+@@ -45,10 +99,18 @@
+      cSatipPoller::GetInstance()->Register(*this);
+      registeredM = true;
+      }
+-  // Send two queries with one second interval
+-  Write(bcastAddressS, reinterpret_cast<const unsigned char *>(bcastMessageS), strlen(bcastMessageS));
+-  cCondWait::SleepMs(1000);
+-  Write(bcastAddressS, reinterpret_cast<const unsigned char *>(bcastMessageS), strlen(bcastMessageS));
++  // Send two queries with one second interval - on every local
++  // interface, so the egress does not depend on the default
++  // multicast route (Hyper-V-Switches!); see also JoinGroup().
++  for (int round = 0; round < 2; ++round) {
++      for (size_t i = 0; i < ifacesM.size(); ++i) {
++          if (ifacesM[i] != "0.0.0.0")
++             SetMulticastIf(ifacesM[i].c_str());
++          Write(bcastAddressS, reinterpret_cast<const unsigned char *>(bcastMessageS), strlen(bcastMessageS));
++          }
++      if (round == 0)
++         cCondWait::SleepMs(1000);
++      }
+ }
+ 
+ int cSatipMsearch::GetFd(void)
+--- a/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/vdr-plugin-satip/msearch.h
++++ b/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/vdr-plugin-satip/msearch.h
+@@ -12,6 +12,9 @@
+ #include "socket.h"
+ #include "pollerif.h"
+ 
++#include <string>
++#include <vector>
++
+ class cSatipMsearch : public cSatipSocket, public cSatipPollerIf {
+ private:
+   enum {
+@@ -24,6 +27,10 @@
+   unsigned int bufferLenM;
+   unsigned char *bufferM;
+   bool registeredM;
++  // Alle lokalen IPv4-Adressen (ohne Loopback): M-SEARCH geht pro
++  // Interface raus, Gruppe wird pro Interface gejoint (Hyper-V!).
++  std::vector<std::string> ifacesM;
++  static std::vector<std::string> LocalAddresses(void);
+ 
+ public:
+   explicit cSatipMsearch(cSatipDiscoverIf &discoverP);

@@ -1,0 +1,52 @@
+name: MSYS2 build (w_scan_cpp)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      # setup-msys2-Doku: autocrlf VOR checkout abschalten, sonst CRLF in .sh-Dateien
+      - name: CRLF-Autokonvertierung abschalten
+        run: git config --global core.autocrlf input
+        shell: pwsh
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: MSYS2 einrichten (MSYS, Update + Pakete)
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MSYS
+          update: true
+          install: >-
+            base-devel
+            msys2-devel
+            pkgconf
+            libcurl-devel openssl-devel zlib-devel
+            gettext-devel
+            libzstd-devel libidn2-devel libpsl-devel brotli-devel libnghttp2-devel
+            dos2unix wget unzip
+
+      - name: Pipeline (Patches, Vendor, librepfunc, Build, Gate, Paket)
+        run: |
+          set -euo pipefail
+          bash tools/build.sh --skip-install --skip-verify
+
+      - name: Paket-Metadaten anhaengen
+        run: |
+          set -euo pipefail
+          pacman -Q > dist/w_scan_cpp-msys-x86_64/msys-packages.txt
+          gcc -dumpmachine >> dist/w_scan_cpp-msys-x86_64/msys-packages.txt
+
+      - name: Artifact hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: w_scan_cpp-msys-x86_64
+          path: dist/w_scan_cpp-msys-x86_64

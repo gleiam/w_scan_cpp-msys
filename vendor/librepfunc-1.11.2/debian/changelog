@@ -1,0 +1,63 @@
+librepfunc (1.11.2-1) unstable; urgency=medium
+
+  * New upstream version 1.11.2
+  * Refresh patches
+  * Adopt package. Thanks Phil Wyett! (Closes: #1072194)
+  * Bump standards version to 4.7.2 (no changes needed)
+  * Set multiarch same
+
+ -- Apostolos Kefalas <sv1ljj@raag.org>  Sat, 27 Dec 2025 14:30:37 +0200
+
+librepfunc (1.10.0-1) unstable; urgency=medium
+
+  * New upstream version 1.10.0
+
+ -- Apostolos Kefalas <sv1ljj@raag.org>  Sun, 17 Mar 2024 12:19:26 +0200
+
+librepfunc (1.9.1-1) unstable; urgency=medium
+
+  * New upstream version 1.9.1
+
+ -- Apostolos Kefalas <sv1ljj@raag.org>  Wed, 06 Mar 2024 16:22:05 +0200
+
+librepfunc (1.9.0-1) unstable; urgency=medium
+
+  [ Phil Wyett ]
+  * Change VCS to debian group.
+
+  [ Apostolos Kefalas ]
+  * New upstream version 1.9.0
+  * Update year in d/copyright
+
+ -- Apostolos Kefalas <sv1ljj@raag.org>  Fri, 23 Feb 2024 19:47:40 +0200
+
+librepfunc (1.8.1-1) unstable; urgency=medium
+
+  * New maintainer (Closes: #1052443).
+  * Remove cruft and disable verbose in 'd/rules'.
+  * Add 'd/upstream/metadata'.
+  * Changed VCS field data now repo has moved.
+
+  [ Fab Stz ]
+  * refresh patches
+
+  [ Apostolos Kefalas ]
+  * New upstream version 1.8.1
+  * Add myself as co-maintainer
+  * Update d/copyright with myself and year
+
+ -- Apostolos Kefalas <sv1ljj@raag.org>  Fri, 17 Nov 2023 20:53:04 +0200
+
+librepfunc (1.7.0-1) unstable; urgency=medium
+
+  * d/control: Bump Standards-Version to 4.6.2 (no changes needed)
+  * d/control: fix typo in long description
+  * New upstream version 1.7.0
+
+ -- Fab Stz <fabstz-it@yahoo.fr>  Tue, 20 Jun 2023 22:05:28 +0200
+
+librepfunc (1.6.4-1) unstable; urgency=medium
+
+  * Initial release. (Closes: #1023110)
+
+ -- Fab Stz <fabstz-it@yahoo.fr>  Sun, 30 Oct 2022 11:27:11 +0100

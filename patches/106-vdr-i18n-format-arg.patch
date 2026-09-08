@@ -1,0 +1,16 @@
+--- a/w-scan-cpp-20260515+dfsg/vdr/i18n.h
++++ b/w-scan-cpp-20260515+dfsg/vdr/i18n.h
+@@ -13,6 +13,13 @@
+ #include <stdio.h>
+ #include "tools.h"
+ 
++#ifdef __MSYS__
++// __attribute_format_arg__ kommt aus glibc <sys/cdefs.h>; hier No-Op.
++#ifndef __attribute_format_arg__
++#define __attribute_format_arg__(x)
++#endif
++#endif
++
+ #define I18N_DEFAULT_LOCALE "en_US"
+ #define I18N_MAX_LOCALE_LEN 16       // for buffers that hold en_US etc.
+ #define I18N_MAX_LANGUAGES  256      // for buffers that hold all available languages

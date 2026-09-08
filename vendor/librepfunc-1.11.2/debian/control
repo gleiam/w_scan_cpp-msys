@@ -1,0 +1,66 @@
+Source: librepfunc
+Section: libs
+Priority: optional
+Maintainer: Apostolos Kefalas <sv1ljj@raag.org>
+Build-Depends: debhelper-compat (= 13)
+Rules-Requires-Root: no
+Standards-Version: 4.7.2
+Homepage: https://github.com/wirbel-at-vdr-portal/librepfunc
+Vcs-Git: https://salsa.debian.org/debian/librepfunc.git
+Vcs-Browser: https://salsa.debian.org/debian/librepfunc
+
+Package: librepfunc1
+Architecture: any
+Multi-Arch: same
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: set of C++ classes and utilities for building multimedia tools
+ This is a collection of utilities and functions used for example in w-scan-cpp
+ .
+ string related:
+  * LowerCase and UpperCase
+  * LeftTrim and RightTrim and Trim
+  * FrontFill and BackFill
+  * ReplaceAll
+ .
+ vector of string related:
+  * SplitStr
+ .
+ number conversion to string or vice versa
+  * IntToStr
+  * FloatToStr
+  * ExpToStr
+  * StrToInt
+  * StrToFloat
+ .
+ print time
+  * TimeStr
+ .
+ other conversions
+  * BCDtoDecimal
+ .
+ sleep threads
+  * Sleep, mSleep, uSleep
+ .
+ print hex data
+  * HexDump
+ .
+ files and directories
+  * FileExists
+  * cFileList
+  * ReadFileToStream
+  * ReadFile
+  * WriteStreamToFile
+  * WriteFile
+ .
+ start/stop threads from main thread
+  * ThreadBase
+
+Package: librepfunc-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: no
+Depends: librepfunc1 (= ${binary:Version}), ${misc:Depends}
+Description: set of C++ classes and utilities for building multimedia tools (dev files)
+ This is a collection of utilities and functions used for example in w-scan-cpp
+ .
+ This package contains the files required to build other packages.

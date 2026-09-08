@@ -1,0 +1,20 @@
+--- a/w-scan-cpp-20260515+dfsg/vdr/svdrp.c
++++ b/w-scan-cpp-20260515+dfsg/vdr/svdrp.c
+@@ -258,7 +258,7 @@
+ {
+   if (sock >= 0 && tcp) {
+      sockaddr_in Addr;
+-     uint Size = sizeof(Addr);
++     socklen_t Size = sizeof(Addr);
+      int NewSock = accept(sock, (sockaddr *)&Addr, &Size);
+      if (NewSock >= 0) {
+         bool Accepted = SVDRPhosts.Acceptable(Addr.sin_addr.s_addr);
+@@ -285,7 +285,7 @@
+   if (sock >= 0 && !tcp) {
+      char buf[MAXUDPBUF];
+      sockaddr_in Addr;
+-     uint Size = sizeof(Addr);
++     socklen_t Size = sizeof(Addr);
+      int NumBytes = recvfrom(sock, buf, sizeof(buf), 0, (sockaddr *)&Addr, &Size);
+      if (NumBytes >= 0) {
+         buf[NumBytes] = 0;

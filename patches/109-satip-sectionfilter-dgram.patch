@@ -1,0 +1,28 @@
+--- a/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/vdr-plugin-satip/sectionfilter.c
++++ b/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/vdr-plugin-satip/sectionfilter.c
+@@ -29,7 +29,13 @@
+ 
+   // Create sockets
+   socketM[0] = socketM[1] = -1;
++#ifdef __MSYS__
++  // Cygwin/MSYS kennt kein SOCK_SEQPACKET fuer AF_UNIX (EINVAL);
++  // SOCK_DGRAM erhaelt dieselbe 1-send=1-recv Nachrichtengrenze.
++  if (socketpair(AF_UNIX, SOCK_DGRAM, 0, socketM) != 0) {
++#else
+   if (socketpair(AF_UNIX, SOCK_SEQPACKET, 0, socketM) != 0) {
++#endif
+      char tmp[64];
+      error("Opening section filter sockets failed (device=%d pid=%d): %s", deviceIndexM, pidM, strerror_r(errno, tmp, sizeof(tmp)));
+      }
+@@ -187,7 +193,11 @@
+      uchar *data = section->Data();
+      int count = section->Count();
+      if (data && (count > 0) && (socketM[1] >= 0) && (socketM[0] >= 0)) {
++#ifdef __MSYS__
++        if (send(socketM[1], data, count, 0) > 0) {
++#else
+         if (send(socketM[1], data, count, MSG_EOR) > 0) {
++#endif
+            // Update statistics
+            AddSectionStatistic(count, 1);
+            }

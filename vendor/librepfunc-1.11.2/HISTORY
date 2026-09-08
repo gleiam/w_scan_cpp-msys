@@ -1,0 +1,44 @@
+/*******************************************************************************
+ * NOTE NOTE NOTE:
+ *
+ * with librepfunc 1.10.0, any changes are/should! documented here in this file.
+ * If you find any change not documented here, pls create an issue on github on
+ * this topic.
+ * Or, even better, directly create an pull request.
+ *
+ * Thank you, wirbel.
+ ******************************************************************************/
+
+
+1.10.0, 20240314
+-------------------------------------------------------------------------------
+ * add micro seconds measurement to cRunTime. This add-on should not break
+   anything.
+   -> API-compatible, but new functionality, 1.9.1 -> 1.10.0 
+ * add missing HISTORY file
+
+1.11.0, 20240418
+-------------------------------------------------------------------------------
+ * add DirectoryExists()
+ * add ExtractFilePath()
+ * add ExtractFileName()
+ * add CreateDir()
+ * add RemoveDir()
+ * add IntToOct()
+ * add IsAsciiFile()
+ * add SystemExecute()
+ * add wget()
+ These add-on's should not break anything.
+   -> API-compatible, but new functionality, 1.10.0 -> 1.11.0
+ * Makefile: allow CXX and AR to be overwritten.
+   This change was requested a while ago by heitbaum, see PR #4 to allow cross
+   compile.
+
+1.11.1, 20240501
+-------------------------------------------------------------------------------
+ * bug: BackFill() should take UTF-8 {2,3,4}-byte encoded chars into account
+
+1.11.2, 20251224
+-------------------------------------------------------------------------------
+ * fix building with c++20, as reported by R.Heitmann
+ * change character conversions, deprecated in C++17.

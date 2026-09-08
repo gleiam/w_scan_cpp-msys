@@ -1,0 +1,22 @@
+These persons contributed to this open-source library.
+Thanks to them for..
+
+
+Alexander Grothe <seahawk1986@hotmail.com>
+ - for pointing out the need for relative symbolic links and his
+   pull request for it.
+
+Fab Stz <fabstz-it@yahoo.fr>
+ - for improving builds on debian
+ - for reporting the use of -lpthread instead of -pthread in Makefile
+ - for suggestion to add SONAME symbol to this lib
+ - for a Makefile patch to add reproducable builds
+ - for pointing out, that the linker is called every time in Makefile,
+   even if the lib or dll was already created.
+
+Lars The
+ - for a PR enabling static library builds.
+
+Rudi Heitbaum
+ - for a PR fixing the installed static libs file permissions.
+ - for reporting C++20 issues.

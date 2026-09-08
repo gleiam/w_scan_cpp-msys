@@ -1,0 +1,35 @@
+--- a/w-scan-cpp-20260515+dfsg/vdr/thread.c
++++ b/w-scan-cpp-20260515+dfsg/vdr/thread.c
+@@ -81,8 +81,16 @@
+ 
+ void cCondWait::SleepMs(int TimeoutMs)
+ {
++#ifdef __MSYS__
++  // Unter Cygwin/MSYS erzeugt jede pthread_mutex/cond-Init Kernel-Handles.
++  // SleepMs wird in Warteschleifen sehr oft aufgerufen (pro Aufruf je 1x
++  // mutex+cond init/destroy); Win32-Sleep vermeidet das vollstaendig.
++  // Linux-Verhalten unveraendert (Fallthrough zum cCondWait-Pfad).
++  Sleep((DWORD)max(TimeoutMs, 3)); // Win32 Sleep (ms), windows.h bereits eingebunden
++#else
+   cCondWait w;
+   w.Wait(max(TimeoutMs, 3)); // making sure the time is >2ms to avoid a possible busy wait
++#endif
+ }
+ 
+ bool cCondWait::Wait(int TimeoutMs)
+@@ -176,6 +184,7 @@
+   (void)PreferWriter; // no rwlock kind selection under MSYS, use default
+ #endif
+   pthread_rwlock_init(&rwlock, &attr);
++  pthread_rwlockattr_destroy(&attr);
+ }
+ 
+ cRwLock::~cRwLock()
+@@ -230,6 +239,7 @@
+   pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK_NP);
+ #endif
+   pthread_mutex_init(&mutex, &attr);
++  pthread_mutexattr_destroy(&attr);
+ }
+ 
+ cMutex::~cMutex()

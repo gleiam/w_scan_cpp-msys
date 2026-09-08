@@ -1,0 +1,145 @@
+This is librepfunc - a collection of functions, classes and so on,
+which i use often.
+
+
+Written by:                  Winfried Koehler <nvdec A.T. quantentunnel D.O.T. de >
+Project's homepage:          https://github.com/wirbel-at-vdr-portal/librepfunc
+Latest version available at: see homepage
+License:                     GPL v2
+
+
+This library is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License version 2 as
+published by the Free Software Foundation.
+See the file COPYING for more information.
+
+--------------------------------------------------------------------------------
+
+
+
+--------------------------------------------------------------------------------
+- About this library                                                           -
+--------------------------------------------------------------------------------
+This is a collection is utilities and functions, which i personally use in my
+projects, shifting them into a lib helps me not reinvent the wheel every time.
+
+string related:
+* LowerCase and UpperCase
+* LeftTrim and RightTrim and Trim
+* FrontFill and BackFill
+* ReplaceAll
+
+vector of string related:
+* SplitStr
+
+number conversion to string or vice versa
+ * IntToStr
+ * FloatToStr
+ * ExpToStr
+ * StrToInt
+ + StrToFloat
+
+print time
+ * TimeStr
+
+other conversions
+ * BCDtoDecimal
+
+sleep threads
+ * Sleep, mSleep, uSleep
+
+print hex data
+ * HexDump
+
+files and directories
+ * FileExists
+ * cFileList
+ * ReadFileToStream
+ * ReadFile
+ * WriteStreamToFile
+ * WriteFile
+
+start/stop threads from main thread
+ * ThreadBase
+
+(..)
+
+
+--------------------------------------------------------------------------------
+- About Library Versioning                                                     -
+--------------------------------------------------------------------------------
+This library uses a three number version numbering, following to what i under-
+stand as "reasonable versioning rules".
+The rule of thumb is here:
+
+    version = MAJOR.MINOR.PATCH
+
+example: 1.0.0
+
+
+MAJOR increased -> an API-incompatible change was introduced. Installing the lib
+                   may break installed packages using the old lib.
+
+MINOR increased -> an API-compatible, new functionality was added. It's safe to
+                   replace any older version of this lib with a newer one.
+
+PATCH increased -> the API is untouched. An inprovement or bug fix was done. It
+                   is recommended to replace older libs with same MAJOR.MINOR.
+
+--------------------------------------------------------------------------------
+- Library Compat                                                               -
+--------------------------------------------------------------------------------
+  - 1.0.0 first version, for VDR wirbelscan-Plugin 2021.10.xx, LFS parser,
+          Sat Table Generator for wirbelscan.
+
+  - 1.1.0 adds ExpToStr() for w_scan_cpp > 20211009, which in turn uses the
+          VDR wirbelscan-Plugin above.
+
+  - 1.1.1 merge pull request "Create relative symbolic links for shared library"
+          to improve ubuntu build system compat
+
+  - 1.1.2 add 'make dll' target to support mingw64 from msys2.
+          This allows to use the lib on WIN32.
+
+--------------------------------------------------------------------------------
+- Library Compat                                                               -
+--------------------------------------------------------------------------------
+Installation:
+   make -j8
+   sudo make install
+
+If you - by mistake - installed this lib and may want to completely remove it
+from your system:
+   sudo make uninstall
+
+NOTE: this will remove exactly the files and links this package installed,
+      not those from newer or older versions.
+      However, this may break links overwritten by 'make install' of any other
+      version of this lib.
+
+
+Library update:
+  Find the very last installed source of this lib and execute 'make uninstall'.
+  Continue with Installation Process of the newer lib.
+
+It's possible to build a static version of librepfunc (librepfunc.a):
+   make -j8 librepfunc.a
+   sudo make install-static
+
+
+--------------------------------------------------------------------------------
+- mingw64 on WIN32                                                             -
+--------------------------------------------------------------------------------
+Installation (in mingw64 window):
+   make dll
+
+After that, you copy the dll and header to their destinations. Suggestion for
+a possible 'make install-dll' target where to put the dll and header are welcome.
+
+Linking to the lib is done by adding
+   -l:librepfunc.dll 
+to your programs Makefile.
+
+
+have phun,
+Winfried

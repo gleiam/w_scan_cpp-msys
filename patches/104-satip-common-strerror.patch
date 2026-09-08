@@ -1,0 +1,13 @@
+--- a/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/satip/common.h
++++ b/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/satip/common.h
+@@ -57,9 +57,8 @@
+ #define ERROR_IF_FUNC(exp, errstr, func, ret)                  \
+   do {                                                         \
+      if (exp) {                                                \
+-        char tmp[64];                                          \
+         esyslog("[%s,%d]: " errstr ": %s", __FILE__, __LINE__, \
+-                strerror_r(errno, tmp, sizeof(tmp)));          \
++                strerror(errno));                              \
+         func;                                                  \
+         ret;                                                   \
+         }                                                      \

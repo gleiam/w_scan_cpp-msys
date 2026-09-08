@@ -1,0 +1,191 @@
+--- a/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/vdr-plugin-satip/socket.c
++++ b/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/vdr-plugin-satip/socket.c
+@@ -184,11 +184,41 @@
+   return false;
+ }
+ 
+-bool cSatipSocket::Join(void)
++bool cSatipSocket::SetMulticastIf(const char *ifaceAddrP)
++{
++  dbg_funcname("%s (%s)", __PRETTY_FUNCTION__, ifaceAddrP);
++  if (socketDescM < 0)
++     return false;
++  in_addr_t iface = htonl(INADDR_ANY);
++  if (!isempty(ifaceAddrP) && !CheckAddress(ifaceAddrP, &iface))
++     return false;
++  ERROR_IF_RET(setsockopt(socketDescM, IPPROTO_IP, IP_MULTICAST_IF, &iface, sizeof(iface)) < 0, "setsockopt(IP_MULTICAST_IF)", return false);
++  return true;
++}
++
++bool cSatipSocket::JoinGroup(const char *groupP, const char *ifaceP)
++{
++  dbg_funcname("%s (%s, %s)", __PRETTY_FUNCTION__, groupP, ifaceP);
++  in_addr_t group = htonl(INADDR_ANY);
++  in_addr_t iface = htonl(INADDR_ANY);
++  if (!CheckAddress(groupP, &group))
++     return false;
++  if (!isempty(ifaceP) && !CheckAddress(ifaceP, &iface))
++     return false;
++  streamAddrM = group;
++  return JoinAddr(group, iface);
++}
++
++bool cSatipSocket::JoinAddr(in_addr_t groupP, in_addr_t ifaceP)
+ {
+   dbg_funcname("%s", __PRETTY_FUNCTION__);
+   // Check if socket exists
+-  if (socketDescM >= 0 && !isMulticastM) {
++  if (socketDescM >= 0) {
++     // Doppel-Joins desselben Paares vermeiden
++     for (size_t i = 0; i < joinsM.size(); ++i) {
++         if ((joinsM[i].first == groupP) && (joinsM[i].second == ifaceP))
++            return true;
++         }
+      // Join a new multicast group
+      if (useSsmM) {
+         // Source-specific multicast (SSM) is used
+@@ -198,7 +228,7 @@
+         gsr.gsr_interface = 0; // if_nametoindex("any") ?
+         grp = (struct sockaddr_in*)&gsr.gsr_group;
+         grp->sin_family = AF_INET;
+-        grp->sin_addr.s_addr = streamAddrM;
++        grp->sin_addr.s_addr = groupP;
+         grp->sin_port = 0;
+         src = (struct sockaddr_in*)&gsr.gsr_source;
+         src->sin_family = AF_INET;
+@@ -206,49 +236,61 @@
+         src->sin_port = 0;
+         ERROR_IF_RET(setsockopt(socketDescM, SOL_IP, MCAST_JOIN_SOURCE_GROUP, &gsr, sizeof(gsr)) < 0, "setsockopt(MCAST_JOIN_SOURCE_GROUP)", return false);
+         }
+-     else {
+-        struct ip_mreq mreq;
+-        mreq.imr_multiaddr.s_addr = streamAddrM;
+-        mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+-        ERROR_IF_RET(setsockopt(socketDescM, SOL_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0, "setsockopt(IP_ADD_MEMBERSHIP)", return false);
+-        }
+-     // Update multicasting flag
+-     isMulticastM = true;
+-     }
++      else {
++         struct ip_mreq mreq;
++         mreq.imr_multiaddr.s_addr = groupP;
++         mreq.imr_interface.s_addr = ifaceP;
++         ERROR_IF_RET(setsockopt(socketDescM, SOL_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0, "setsockopt(IP_ADD_MEMBERSHIP)", return false);
++         }
++      // Update multicasting flag
++      joinsM.push_back(std::make_pair(groupP, ifaceP));
++      isMulticastM = true;
++      }
+   return true;
+ }
+ 
++bool cSatipSocket::Join(void)
++{
++  dbg_funcname("%s", __PRETTY_FUNCTION__);
++  return JoinAddr(streamAddrM, htonl(INADDR_ANY));
++}
++
+ bool cSatipSocket::Leave(void)
+ {
+   dbg_funcname("%s", __PRETTY_FUNCTION__);
+   // Check if socket exists
+   if (socketDescM >= 0 && isMulticastM) {
+-     // Leave the existing multicast group
+-     if (useSsmM) {
+-        // Source-specific multicast (SSM) is used
+-        struct group_source_req gsr;
+-        struct sockaddr_in *grp;
+-        struct sockaddr_in *src;
+-        gsr.gsr_interface = 0; // if_nametoindex("any") ?
+-        grp = (struct sockaddr_in*)&gsr.gsr_group;
+-        grp->sin_family = AF_INET;
+-        grp->sin_addr.s_addr = streamAddrM;
+-        grp->sin_port = 0;
+-        src = (struct sockaddr_in*)&gsr.gsr_source;
+-        src->sin_family = AF_INET;
+-        src->sin_addr.s_addr = sourceAddrM;
+-        src->sin_port = 0;
+-        ERROR_IF_RET(setsockopt(socketDescM, SOL_IP, MCAST_LEAVE_SOURCE_GROUP, &gsr, sizeof(gsr)) < 0, "setsockopt(MCAST_LEAVE_SOURCE_GROUP)", return false);
+-        }
+-     else {
+-        struct ip_mreq mreq;
+-        mreq.imr_multiaddr.s_addr = streamAddrM;
+-        mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+-        ERROR_IF_RET(setsockopt(socketDescM, SOL_IP, IP_DROP_MEMBERSHIP, &mreq, sizeof(mreq)) < 0, "setsockopt(IP_DROP_MEMBERSHIP)", return false);
+-        }
+-     // Update multicasting flag
+-     isMulticastM = false;
+-     }
++     bool ok = true;
++     // Leave all joined (group, interface) pairs
++     for (size_t i = 0; i < joinsM.size(); ++i) {
++         if (useSsmM) {
++            // Source-specific multicast (SSM) is used
++            struct group_source_req gsr;
++            struct sockaddr_in *grp;
++            struct sockaddr_in *src;
++            gsr.gsr_interface = 0; // if_nametoindex("any") ?
++            grp = (struct sockaddr_in*)&gsr.gsr_group;
++            grp->sin_family = AF_INET;
++            grp->sin_addr.s_addr = joinsM[i].first;
++            grp->sin_port = 0;
++            src = (struct sockaddr_in*)&gsr.gsr_source;
++            src->sin_family = AF_INET;
++            src->sin_addr.s_addr = sourceAddrM;
++            src->sin_port = 0;
++            ERROR_IF_RET(setsockopt(socketDescM, SOL_IP, MCAST_LEAVE_SOURCE_GROUP, &gsr, sizeof(gsr)) < 0, "setsockopt(MCAST_LEAVE_SOURCE_GROUP)", ok = false);
++            }
++         else {
++            struct ip_mreq mreq;
++            mreq.imr_multiaddr.s_addr = joinsM[i].first;
++            mreq.imr_interface.s_addr = joinsM[i].second;
++            ERROR_IF_RET(setsockopt(socketDescM, SOL_IP, IP_DROP_MEMBERSHIP, &mreq, sizeof(mreq)) < 0, "setsockopt(IP_DROP_MEMBERSHIP)", ok = false);
++            }
++         }
++      joinsM.clear();
++      // Update multicasting flag
++      isMulticastM = false;
++      return ok;
++      }
+   return true;
+ }
+ 
+--- a/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/vdr-plugin-satip/socket.h
++++ b/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/vdr-plugin-satip/socket.h
+@@ -9,6 +9,9 @@
+ #define __SATIP_SOCKET_H
+ 
+ #include <arpa/inet.h>
++#include <string>
++#include <utility>
++#include <vector>
+ 
+ class cSatipSocket {
+ private:
+@@ -20,9 +23,13 @@
+   in_addr_t streamAddrM;
+   in_addr_t sourceAddrM;
+   size_t rcvBufSizeM;
++  // (Gruppe, Interface)-Paare aller Joins; noetig, da Leave() jedes
++  // Paar einzeln droppen muss (Multihomed-Hosts: ein Join pro Interface).
++  std::vector<std::pair<in_addr_t, in_addr_t> > joinsM;
+ 
+   bool CheckAddress(const char *addrP, in_addr_t *inAddrP);
+   bool Join(void);
++  bool JoinAddr(in_addr_t groupP, in_addr_t ifaceP);
+   bool Leave(void);
+ 
+ public:
+@@ -31,6 +38,12 @@
+   virtual ~cSatipSocket();
+   bool Open(const int portP = 0, const bool reuseP = false);
+   bool OpenMulticast(const int portP, const char *streamAddrP, const char *sourceAddrP);
++  // Egress-Interface fuer Multicast-Sendungen festlegen (DVBViewer-Stil:
++  // pro Interface eine Option, sonst entscheidet die Default-Route,
++  // auf Hyper-V-Hosts oft ein vEthernet-Switch ins Nirwana).
++  bool SetMulticastIf(const char *ifaceAddrP);
++  // Multicast-Gruppe auf genau einem Interface joinen (fuer Empfang).
++  bool JoinGroup(const char *groupP, const char *ifaceP);
+   virtual void Close(void);
+   int Fd(void) { return socketDescM; }
+   int Port(void) { return socketPortM; }

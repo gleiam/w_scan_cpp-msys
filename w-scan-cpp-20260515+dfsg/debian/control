@@ -1,0 +1,43 @@
+Source: w-scan-cpp
+Section: video
+Maintainer: Apostolos Kefalas <sv1ljj@raag.org>
+Build-Depends: debhelper-compat (= 13),
+               libcap-dev,
+               libcurl4-openssl-dev,
+               libfontconfig-dev,
+               libfreetype-dev,
+               libjpeg-dev,
+               libpugixml-dev,
+               librepfunc-dev,
+               linux-libc-dev,
+               pkgconf,
+Rules-Requires-Root: no
+Standards-Version: 4.7.4
+Homepage: https://www.gen2vdr.de/wirbel/w_scan_cpp/index2.html
+Vcs-Git: https://salsa.debian.org/debian/w-scan-cpp.git
+Vcs-Browser: https://salsa.debian.org/debian/w-scan-cpp
+
+Package: w-scan-cpp
+Architecture: any
+Multi-Arch: foreign
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: DVB channel scanner (successor of w_scan)
+ This is w_scan_cpp - a dtv channel scanner based on VDR (www.tvdr.de)
+ and its Plugins.
+ .
+ w_scan_cpp supports
+ .
+    DVB-T(2), DVB-C, DVB-S(2), ATSC(VSB && QAM)
+    SAT>IP
+    SCR ("Unicable") EN-50494 & EN-50607 (aka. "JESS")
+    DiSEqC switches
+    DiSEqC rotors (Standard & USALS)
+    various output formats
+        VDR channels.conf
+        VLC channels.xspf
+        dtv scan tables for dvbv5-scan
+        channels.dat for the SAT>IP "DVB Viewer Lite for Windows"
+        (..)
+ .
+ Some features are more recent than those of w_scan, other outdated features
+ were not ported.

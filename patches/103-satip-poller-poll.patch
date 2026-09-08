@@ -1,0 +1,173 @@
+--- a/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/satip/poller.c
++++ b/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/satip/poller.c
+@@ -7,7 +7,11 @@
+ 
+ #define __STDC_FORMAT_MACROS // Required for format specifiers
+ #include <inttypes.h>
++#ifdef __MSYS__
++#include <poll.h> // statt epoll (fehlt unter Cygwin/MSYS)
++#else
+ #include <sys/epoll.h>
++#endif
+ 
+ #include "config.h"
+ #include "common.h"
+@@ -41,7 +45,11 @@
+ cSatipPoller::cSatipPoller()
+ : cThread("SATIP poller"),
+   mutexM(),
++#ifdef __MSYS__
++  fdM(-1)
++#else
+   fdM(epoll_create(eMaxFileDescriptors))
++#endif
+ {
+   dbg_funcname("%s", __PRETTY_FUNCTION__);
+ }
+@@ -51,7 +59,9 @@
+   dbg_funcname("%s", __PRETTY_FUNCTION__);
+   Deactivate();
+   cMutexLock MutexLock(&mutexM);
++#ifndef __MSYS__
+   close(fdM);
++#endif
+   // Free allocated memory
+ }
+ 
+@@ -72,6 +82,50 @@
+ void cSatipPoller::Action(void)
+ {
+   dbg_funcname("%s Entering", __PRETTY_FUNCTION__);
++#ifdef __MSYS__
++  // poll()-Backend: level-getriggert statt edge (EPOLLET); verpasste
++  // Events feuern erneut, Process() muss nichts aendern.
++  uint64_t maxElapsed = 0;
++  // Increase priority
++  SetPriority(-1);
++  // Do the thread loop
++  while (Running()) {
++        std::vector<std::pair<int, cSatipPollerIf*> > fds;
++        { cMutexLock MutexLock(&mutexM); fds = fdsM; }
++        if (fds.empty()) {
++           cCondWait::SleepMs(100);
++           continue;
++           }
++        std::vector<struct pollfd> pfds(fds.size());
++        for (size_t i = 0; i < fds.size(); ++i) {
++            pfds[i].fd = fds[i].first;
++            pfds[i].events = POLLIN;
++            pfds[i].revents = 0;
++            }
++        int nfds = poll(&pfds[0], pfds.size(), 1000);
++        if (nfds == -1) {
++           if (errno == EINTR)
++              continue;
++           esyslog("[%s,%d]: poll() failed: %s", __FILE__, __LINE__, strerror(errno));
++           break;
++           }
++        for (size_t i = 0; i < fds.size(); ++i) {
++            if (!(pfds[i].revents & (POLLIN | POLLERR | POLLHUP)))
++               continue;
++            cSatipPollerIf *poll = fds[i].second;
++            if (poll) {
++               uint64_t elapsed;
++               cTimeMs processing(0);
++               poll->Process();
++               elapsed = processing.Elapsed();
++               if (elapsed > maxElapsed) {
++                  maxElapsed = elapsed;
++                  dbg_funcname("%s Processing %s took %" PRIu64 " ms", __PRETTY_FUNCTION__, *(poll->ToString()), maxElapsed);
++                  }
++               }
++            }
++        }
++#else
+   struct epoll_event events[eMaxFileDescriptors];
+   uint64_t maxElapsed = 0;
+   // Increase priority
+@@ -94,6 +148,7 @@
+                }
+            }
+         }
++#endif
+   dbg_funcname("%s Exiting", __PRETTY_FUNCTION__);
+ }
+ 
+@@ -101,7 +156,21 @@
+ {
+   dbg_funcname("%s fd=%d", __PRETTY_FUNCTION__, pollerP.GetFd());
+   cMutexLock MutexLock(&mutexM);
+-
++#ifdef __MSYS__
++  int fd = pollerP.GetFd();
++  if (fd < 0)
++     return false;
++  for (size_t i = 0; i < fdsM.size(); ++i) {
++      if (fdsM[i].first == fd) {
++         fdsM[i].second = &pollerP;
++         dbg_funcname("%s Re-added interface fd=%d", __PRETTY_FUNCTION__, fd);
++         return true;
++         }
++      }
++  fdsM.push_back(std::make_pair(fd, &pollerP));
++  dbg_funcname("%s Added interface fd=%d", __PRETTY_FUNCTION__, fd);
++  return true;
++#else
+   struct epoll_event ev;
+   ev.events = EPOLLIN | EPOLLET;
+   ev.data.ptr = &pollerP;
+@@ -109,14 +178,27 @@
+   dbg_funcname("%s Added interface fd=%d", __PRETTY_FUNCTION__, pollerP.GetFd());
+ 
+   return true;
++#endif
+ }
+ 
+ bool cSatipPoller::Unregister(cSatipPollerIf &pollerP)
+ {
+   dbg_funcname("%s fd=%d", __PRETTY_FUNCTION__, pollerP.GetFd());
+   cMutexLock MutexLock(&mutexM);
++#ifdef __MSYS__
++  int fd = pollerP.GetFd();
++  for (size_t i = 0; i < fdsM.size(); ++i) {
++      if (fdsM[i].first == fd) {
++         fdsM.erase(fdsM.begin() + i);
++         dbg_funcname("%s Removed interface fd=%d", __PRETTY_FUNCTION__, fd);
++         return true;
++         }
++      }
++  return false;
++#else
+   ERROR_IF_RET((epoll_ctl(fdM, EPOLL_CTL_DEL, pollerP.GetFd(), NULL) == -1), "epoll_ctl(EPOLL_CTL_DEL) failed", return false);
+   dbg_funcname("%s Removed interface fd=%d", __PRETTY_FUNCTION__, pollerP.GetFd());
+ 
+   return true;
++#endif
+ }
+--- a/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/satip/poller.h
++++ b/w-scan-cpp-20260515+dfsg/vdr/PLUGINS/src/satip/poller.h
+@@ -11,6 +11,12 @@
+ #include <vdr/thread.h>
+ #include <vdr/tools.h>
+ 
++#ifdef __MSYS__
++// poll()-Backend statt epoll (sys/epoll.h fehlt unter Cygwin/MSYS)
++#include <utility>
++#include <vector>
++#endif
++
+ #include "pollerif.h"
+ 
+ class cSatipPoller : public cThread {
+@@ -20,7 +26,10 @@
+   };
+   static cSatipPoller *instanceS;
+   cMutex mutexM;
+-  int fdM;
++  int fdM; // Linux: epoll-fd; MSYS: ungenutzt (-1)
++#ifdef __MSYS__
++  std::vector<std::pair<int, cSatipPollerIf*> > fdsM;
++#endif
+   void Activate(void);
+   void Deactivate(void);
+   // constructor

@@ -1,0 +1,16 @@
+# Build-Artefakte (werden in CI frisch erzeugt)
+*.o
+*.d
+*.a
+*.exe
+*.dll
+*.log
+*.bin
+*.tmp
+*.stackdump
+dist/
+logs/
+# temporaere Test-/Helper-Dateien
+/tmp/
+/artifacts-act/
+/local/

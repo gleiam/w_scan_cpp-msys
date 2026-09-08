@@ -1,0 +1,17 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: librepfunc
+Source: https://github.com/wirbel-at-vdr-portal/librepfunc
+
+Files: *
+Copyright: 2021-2023 Winfried Koehler <nvdec@quantentunnel.de>
+License: GPL-2.0-only
+
+Files: debian/*
+Copyright: 2022-2023 Fab Stz <fabstz-it@yahoo.fr>
+           2023-2024 Apostolos Kefalas <sv1ljj@raag.org>
+	   2024 Phil Weytt <philip.wyett@kathenas.org>
+License: GPL-2.0-only
+
+License: GPL-2.0-only
+ On Debian systems, you can find a copy of the GPL-2 license under
+ /usr/share/common-licenses/GPL-2.

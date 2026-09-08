@@ -1,0 +1,33 @@
+--- a/w-scan-cpp-20260515+dfsg/vdr/tools.c
++++ b/w-scan-cpp-20260515+dfsg/vdr/tools.c
+@@ -15,7 +15,9 @@
+ #ifdef boolean
+ #define HAVE_BOOLEAN
+ #endif
++#ifndef __MSYS__
+ #include <jpeglib.h>
++#endif
+ #undef boolean
+ }
+ #include <locale.h>
+@@ -1324,6 +1326,7 @@
+ }
+ 
+ // --- RgbToJpeg -------------------------------------------------------------
++#ifndef __MSYS__
+ 
+ #define JPEGCOMPRESSMEM 500000
+ 
+@@ -1417,9 +1420,10 @@
+   jpeg_finish_compress(&cinfo);
+   jpeg_destroy_compress(&cinfo);
+ 
+-  Size = jcd.size;
+-  return jcd.mem;
++   Size = jcd.size;
++   return jcd.mem;
+ }
++#endif // __MSYS__ (no JPEG: RgbToJpeg stubbed in msys/)
+ 
+ // --- GetHostName -----------------------------------------------------------
+ 

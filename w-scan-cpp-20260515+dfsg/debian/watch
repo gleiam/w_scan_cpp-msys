@@ -1,0 +1,19 @@
+Version: 5
+
+Source: https://api.github.com/repos/wirbel-at-vdr-portal/w_scan_cpp/git/matching-refs/tags/
+Matching-Pattern: https://api.github.com/repos/[^/]+/[^/]+/git/refs/tags/@ANY_VERSION@
+Download-Url-Mangle: s%(api.github.com/repos/[^/]+/[^/]+)/git/refs/%$1/tarball/refs/%g
+Filename-Mangle: s%.*/@ANY_VERSION@%@PACKAGE@-$1.tar.gz%
+Dversion-Mangle: s/@DEB_EXT@//
+Search-Mode: plain
+Repack: Yes
+Repacksuffix: +dfsg
+
+Component: vdr
+Source: https://api.github.com/repos/wirbel-at-vdr-portal/w_scan_cpp-third_party_packages/contents/
+Matching-Pattern: https://raw.githubusercontent.com/[^/]+/[^/]+/main/third_party_@ANY_VERSION@\.tar\.bz2
+Filename-Mangle: s%.*/@ANY_VERSION@%@PACKAGE@-$1.tar.gz%
+Dversion-Mangle: s/@DEB_EXT@//
+Search-Mode: plain
+Repack: Yes
+Repacksuffix: +dfsg

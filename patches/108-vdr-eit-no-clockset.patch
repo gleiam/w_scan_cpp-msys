@@ -1,0 +1,22 @@
+--- a/w-scan-cpp-20260515+dfsg/vdr/eit.c
++++ b/w-scan-cpp-20260515+dfsg/vdr/eit.c
+@@ -467,6 +467,11 @@
+   int diff = dvbtim - loctim;
+   if (abs(diff) > MAX_TIME_DIFF) {
+      mutex.Lock();
++#ifdef __MSYS__
++     // Systemuhr unter Windows nie aus DVB-Zeit stellen (adjtime fehlt,
++     // clock_settime waere privilegiert); nur melden.
++     dsyslog("system time differs by %d s (DVB %s, local %s) - not adjusting under MSYS", diff, *TimeToString(dvbtim), *TimeToString(loctim));
++#else
+      if (abs(diff) > MAX_ADJ_DIFF) {
+         timespec ts = {};
+         ts.tv_sec = dvbtim;
+@@ -485,6 +490,7 @@
+         else
+            esyslog("ERROR while adjusting system time: %m");
+         }
++#endif
+      mutex.Unlock();
+      }
+ }

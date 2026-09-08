@@ -1,0 +1,214 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: w-scan-cpp
+Upstream-Contact: Winfried Koehler <nvdec A.T. quantentunnel D.O.T. de>
+Source: https://www.gen2vdr.de/wirbel/w_scan_cpp/index2.html
+Files-Excluded: doc/service_list.dtd doc/services.xml
+Comment: The above files are removed because they are non-DFSG.
+
+Files: *
+Copyright: Winfried Koehler <nvdec A.T. quantentunnel D.O.T. de>
+           and contributors
+License: GPL-2.0
+
+Files: debian/*
+Copyright: Fab Stz <fabstz-it@yahoo.fr>
+           2026 Apostolos Kefalas <sv1ljj@raag.org>
+License: GPL-2.0-or-later
+
+Files: vdr/*
+Copyright: 2000-2021 Klaus Schmidinger
+License: GPL-2.0-or-later
+
+Files: vdr/args.*
+Copyright: Lars Hanisch <dvb@flensrocker.de>
+License: GPL-2.0-or-later
+
+Files: vdr/dvbsubtitle.*
+Copyright: Marco Schluessler <marco@lordzodiac.de>
+License: GPL-2.0-or-later
+
+Files: vdr/dvbspu.*
+       vdr/spu.*
+Copyright: 2001-2002 Andreas Schultz <aschultz@warp10.net>
+License: GPL-2.0-or-later
+
+Files: vdr/libsi/*
+Copyright: 2003-2021 Marcel Wiesweg
+           2001-2003 Rolf Hakenes <hakenes@hippomi.de>
+           Oleg Assovski,
+License: GPL-2.0-or-later
+
+Files: vdr/eit.*
+       vdr/epg.*
+Copyright: Robert Schneider <Robert.Schneider@web.de>
+           Rolf Hakenes <hakenes@hippomi.de>
+License: GPL-2.0-or-later
+
+Files: vdr/font.c
+Copyright: Osama Alrawab <alrawab@hotmail.com>
+           2000-2021 Klaus Schmidinger
+License: GPL-2.0-or-later
+
+Files: vdr/lirc.*
+Copyright: Carsten Koch <Carsten.Koch@icem.de>
+License: GPL-2.0-or-later
+
+Files: vdr/shutdown.*
+Copyright: Udo Richter <udo_richter@gmx.de>
+License: GPL-2.0-or-later
+
+Files: vdr/svdrpsend.1
+Copyright: Tobias Grimm <tg@e-tobi.net>
+License: GPL-2.0-or-later
+
+Files: vdr/PLUGINS/src/*satip/*
+Copyright: Rolf Ahrenberg < R o l f . A h r e n b e r g @ s c i . f i >
+License: GPL-2.0
+
+Files: vdr/PLUGINS/src/wirbelscan*
+Copyright: Winfried Koehler <nvdec A.T. quantentunnel D.O.T. de >
+License: GPL-2.0-or-later
+
+Files: vdr/PLUGINS/src/wirbelscan*/po/*
+Copyright: Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
+           Marc Rovira Vall <tm05462@salleURL.edu>, 2003
+           Ramon Roca <ramon.roca@xcombo.com>, 2003
+           Mogens Elneff <mogens@elneff.dk>, 2004
+           Dimitrios Dimitrakos <mail@dimitrios.de>, 2002
+           Ruben Nunez Francisco <ruben.nunez@tang-it.com>, 2002
+           Arthur Konovalov <kasjas@hot.ee>, 2004
+           Hannu Savolainen <hannu@opensound.com>, 2002
+           Niko Tarnanen <niko.tarnanen@hut.fi>, 2003
+           Rolf Ahrenberg <rahrenbe@cc.hut.fi>, 2003
+           Jean-Claude Repetto <jc@repetto.org>, 2001
+           Olivier Jacques <jacquesolivier@hotmail.com>, 2003
+           Gregoire Favre <greg@magma.unil.ch>, 2003
+           Nicolas Huillard <nhuillard@e-dition.fr>, 2005
+           Drazen Dupor <drazen.dupor@dupor.com>, 2004
+           Dino Ravnic <dino.ravnic@fer.hr>, 2004
+           Istvan Koenigsberger <istvnko@hotmail.com>, 2002
+           Guido Josten <guido.josten@t-online.de>, 2002
+           Alberto Carraro <bertocar@tin.it>, 2001
+           Antonio Ospite <ospite@studenti.unina.it>, 2003
+           Sean Carlos <seanc@libero.it>, 2005
+           Diego Pierotto <vdr-italian@tiscali.it>
+           Arnold Niessen <niessen@iae.nl> <arnold.niessen@philips.com>, 2001
+           Hans Dingemans <hans.dingemans@tacticalops.nl>, 2003
+           Maarten Wisse <Maarten.Wisse@urz.uni-hd.de>, 2005
+           Truls Slevigen <truls@slevigen.no>, 2002
+           Michael Rakowski <mrak@gmx.de>, 2002
+           Paulo Lopes <pmml@netvita.pt>, 2001
+           Paul Lacatus <paul@campina.iiruc.ro>, 2002
+           Lucian Muresan <lucianm@users.sourceforge.net>, 2004
+           Vyacheslav Dikonov <sdiconov@mail.ru>, 2004
+           Miha Setina <mihasetina@softhome.net>, 2000
+           Matjaz Thaler <matjaz.thaler@guest.arnes.si>, 2003
+           Tomas Prybil <tomas@prybil.se>, 2002
+           Jan Ekholm <chakie@infa.abo.fi>, 2003
+License: GPL-2.0
+
+Files: vdr/PLUGINS/src/vdr-plugin-satip/po/*
+Copyright: Copyright (C) 2007-2019 Rolf Ahrenberg
+           Gabriel Bonich <gbonich@gmail.com>, 2014-2017
+           Frank Neumann <fnu@yavdr.org>, 2014-2017
+           Gabriel Bonich <gbonich@gmail.com>, 2014-2017
+           Tomasz Maciej Nowak <tomek_n@o2.pl>, 2017
+License: GPL-2.0
+
+Files: vdr/po/*
+Copyright: Copyright (C) 2000-2015, 2021 Klaus Schmidinger <vdr@tvdr.de>
+           Osama Alrawab <alrawab@hotmail.com>, 2010, 2013
+           Marc Rovira Vall <tm05462@salleURL.edu>, 2003
+           Ramon Roca <ramon.roca@xcombo.com>, 2003
+           Luca Olivetti <luca@ventoso.org>, 2008, 2013
+           Vladimír Bárta <vladimir.barta@k2atmitec.cz>, 2006, 2008
+           Jiří Dobrý <jdobry@centrum.cz>, 2008
+           Radek Šťastný <dedkus@gmail.com>, 2010
+           Aleš Juřík <ajurik@quick.cz>, 2013, 2015
+           Mogens Elneff <mogens@elneff.dk>, 2004, 2008
+           Albert Danis <a.danis@gmx.de>, 2015
+           Dimitrios Dimitrakos <mail@dimitrios.de>, 2002, 2006
+           Ruben Nunez Francisco <ruben.nunez@tang-it.com>, 2002, 2006
+           Gabriel Bonich <gbonich@gmail.com>
+           Arthur Konovalov <artlov@gmail.com>, 2004-2013, 2015
+           Hannu Savolainen <hannu@opensound.com>, 2002
+           Jaakko Hyvätti <jaakko@hyvatti.iki.fi>, 2002, 2003
+           Niko Tarnanen <niko.tarnanen@hut.fi>, 2003
+           Rolf Ahrenberg <Rolf.Ahrenberg@sci.fi>, 2003-2008, 2010-2013, 2015
+           Matti Lehtimäki <matti.lehtimaki@gmail.com>, 2013
+           Jean-Claude Repetto <jc@repetto.org>, 2001, 2002, 2008
+           Olivier Jacques <jacquesolivier@hotmail.com>, 2003, 2005
+           Gregoire Favre <greg@magma.unil.ch>, 2003
+           Nicolas Huillard <nhuillard@e-dition.fr>, 2005
+           Pierre Briec <pbriec@free.fr>, 2006
+           Bruno Roussel <bruno.roussel@free.fr>, 2007
+           Michael Nival <mnival@club-internet.fr>, 2007
+           Marc Perrudin <vdr@ekass.net>, 2013
+           Bernard Jaulin <bernard.jaulin@gmail.com>, 2013, 2015, 2018
+           Peter Münster <pmlists@free.fr>, 2013
+           Dominique Plu <dplu@free.fr>, 2013
+           Régis Bossut <famille.bossut@wanadoo.fr>, 2015
+           Drazen Dupor <drazen.dupor@dupor.com>, 2004, 2005
+           Dino Ravnic <dino.ravnic@fer.hr>, 2004
+           Adrian Caval <anrxc@sysphere.org>, 2008
+           Istvan Koenigsberger <istvnko@hotmail.com>, 2002, 2003, 2006
+           Guido Josten <guido.josten@t-online.de>, 2002, 2003, 2006
+           Thomas Günther <tom@toms-cafe.de>, 2007
+           István Füley <ifuley@tigercomp.ro>, 2007, 2012, 2013, 2015, 2018
+           Albert Danis <a.danis@gmx.de>, 2015
+           Alberto Carraro <bertocar@tin.it>, 2001
+           Antonio Ospite <ospite@studenti.unina.it>, 2003, 2006
+           Sean Carlos <seanc@libero.it>, 2005
+           Nino Gerbino <ngerb@interfree.it>, 2006, 2015
+           Diego Pierotto <vdr-italian@tiscali.it>, 2007-2010, 2012, 2013, 2015, 2018, 2020, 2022
+           Valdemaras Pipiras <varas@ambernet.lt>, 2009, 2010, 2013, 2015
+           Dimitar Petrovski <dimeptr@gmail.com>, 2009, 2012, 2013, 2015, 2018.
+           Arnold Niessen <niessen@iae.nl> <arnold.niessen@philips.com>, 2001
+           Hans Dingemans <hans.dingemans@tacticalops.nl>, 2003, 2005
+           Maarten Wisse <Maarten.Wisse@urz.uni-hd.de>, 2005
+           Carel Willemse <carel@nekanali.nl>, 2008, 2013
+           Johan Schuring <johan.schuring@vetteblei.nl>, 2008
+           Cedric Dewijs <cedric.dewijs@telfort.nl>, 2013
+           Erik Oomen <oomen.e@gmail.com>, 2015
+           Truls Slevigen <truls@slevigen.no>, 2002
+           Michael Rakowski <mrak@gmx.de>, 2002, 2003, 2008
+           Jaroslaw Swierczynski <swiergot@gmail.com>, 2006
+           Marek Nazarko <mnazarko@gmail.com>, 2013
+           Tomasz Maciej Nowak <tmn505@gmail.com>, 2015, 2018
+           Paulo Lopes <pmml@netvita.pt>, 2001
+           Cris Silva <hudokkow@gmail.com>, 2010
+           Paul Lacatus <paul@campina.iiruc.ro>, 2002
+           Lucian Muresan <lucianm@users.sourceforge.net>, 2004-2006, 2008, 2010-2015
+           Vyacheslav Dikonov <sdiconov@mail.ru>, 2004, 2005
+           Oleg Roitburd <oroitburd@gmail.com>, 2005-2008, 2013
+           Pridvorov Andrey <ua0lnj@bk.ru>
+           Milan Hrala <hrala.milan@gmail.com>, 2011, 2013, 2015
+           Miha Setina <mihasetina@softhome.net>, 2000
+           Matjaz Thaler <matjaz.thaler@guest.arnes.si>, 2003, 2005, 2006, 2008, 2013
+           Zoran Turalija <zoran.turalija@gmail.com>, 2013
+           Tomas Prybil <tomas@prybil.se>, 2002, 2003, 2005, 2006
+           Jan Ekholm <chakie@infa.abo.fi>, 2003
+           Tomas Berglund <tomber@telia.com>, 2008
+           Magnus Andersson <svankan@bahnhof.se>, 2008
+           Richard Lithvall <r-vdr@boomer.se>, 2013
+           Yarema Aka Knedlyk <yupadmin@gmail.com>, 2007-2010, 2013, 2015, 2018
+           Nan Feng <nfvdr@live.com>, 2008, 2013
+           Johann Friedrichs <johann.friedrichs@web.de>, 2022
+License: GPL-2.0
+
+License: GPL-2.0
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License version 2 as
+ published by the Free Software Foundation.
+ .
+ On Debian systems, you can find a copy of the GPL-2 license under
+ /usr/share/common-licenses/GPL-2.
+
+License: GPL-2.0-or-later
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ On Debian systems, you can find a copy of the GPL-2 license under
+ /usr/share/common-licenses/GPL-2.

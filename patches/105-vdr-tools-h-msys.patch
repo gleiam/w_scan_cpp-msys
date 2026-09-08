@@ -1,0 +1,29 @@
+--- a/w-scan-cpp-20260515+dfsg/vdr/tools.h
++++ b/w-scan-cpp-20260515+dfsg/vdr/tools.h
+@@ -28,6 +28,26 @@
+ #include <sys/types.h>
+ #include "thread.h"
+ 
++#ifdef __MSYS__
++// --- MSYS/Cygwin-Portabilitaet -------------------------------------------
++// __GLIBC_PREREQ gibt es nur unter glibc; als "neu" werten, damit der
++// moderne readdir()-Pfad (ohne _r) verwendet wird.
++#ifndef __GLIBC_PREREQ
++#define __GLIBC_PREREQ(maj, min) 1
++#endif
++// Datei-Flags, die es unter Cygwin/MSYS nicht gibt (werden nie gesetzt,
++// nur mit O_RDONLY/O_RDWR verodert).
++#ifndef O_LARGEFILE
++#define O_LARGEFILE 0
++#endif
++#ifndef O_DIRECT
++#define O_DIRECT 0
++#endif
++#ifndef O_NOATIME
++#define O_NOATIME 0
++#endif
++#endif // __MSYS__
++
+ typedef unsigned char uchar;
+ 
+ extern int SysLogLevel;

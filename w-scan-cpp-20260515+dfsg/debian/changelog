@@ -1,0 +1,73 @@
+w-scan-cpp (20260515+dfsg-1) unstable; urgency=medium
+
+  * Add patch to force groff use tbl preprocessor
+  * Update watch file to version 5
+  * New upstream version 20260515+dfsg (Closes: #1133666)
+  * Update Standards Version. Drop priority
+  * Deleted wrong patch. refresh
+  * Remove superfluous rules
+
+ -- Apostolos Kefalas <sv1ljj@raag.org>  Fri, 15 May 2026 20:57:39 +0300
+
+w-scan-cpp (20250615+dfsg-1) unstable; urgency=medium
+
+  * Adopt package (Closes: #1072193)
+  * Remove Phil Wyett from maintainers. Thanks Phil!
+  * New upstream version 20250615+dfsg (Closes: #1122995)
+  * Bump standards version to 4.7.3 (no changes needed)
+  * d/copyright bump year
+
+ -- Apostolos Kefalas <sv1ljj@raag.org>  Sun, 18 Jan 2026 12:21:46 +0200
+
+w-scan-cpp (20231015+dfsg-3) unstable; urgency=medium
+
+  * 'd/control':
+    - Remove version requirement on 'librepfunc-dev' Build-Depends.
+    - Update obsolete pkg-conf to pkgconf in Build-Depends.
+
+ -- Phil Wyett <philip.wyett@kathenas.org>  Fri, 23 Feb 2024 07:26:29 +0000
+
+w-scan-cpp (20231015+dfsg-2) unstable; urgency=medium
+
+  * Fix broken 'd/watch' file and only use sources available from GitHub.
+  * Remove '0~' prefix at beginning of package version.
+
+ -- Phil Wyett <philip.wyett@kathenas.org>  Wed, 24 Jan 2024 17:05:05 +0000
+
+w-scan-cpp (0~20231015+dfsg-1) unstable; urgency=medium
+
+  * New maintainer (Closes: #1052444).
+  * Disable verbose in 'd/rules'.
+  * Changed VCS field data now repo has moved.
+  * Remove non-DFSG sources 'doc/service_list.dtd' and 'doc/services.xml'.
+  * Add upstream contact to 'd/copyright'.
+
+  [ Fab Stz ]
+  * New upstream version 0~20231015
+
+ -- Phil Wyett <philip.wyett@kathenas.org>  Tue, 16 Jan 2024 17:10:39 +0100
+
+w-scan-cpp (0~20230604-1) unstable; urgency=medium
+
+  * remove 'LCN' patches, it is now supported upstream
+  * d/control replace obsolete build-deps
+  * New upstream version 0~20230604
+  * d/patch/101-makefile_verbose: use CC & CXX from environment if available
+
+ -- Fab Stz <fabstz-it@yahoo.fr>  Tue, 20 Jun 2023 22:05:45 +0200
+
+w-scan-cpp (0~20230121-1) unstable; urgency=medium
+
+  * Bump Standards-Version to 4.6.2 (no change needed)
+  * New upstream version 0~20230121
+  * d/copyright: update to match latest upstream
+  * remove patches that were merged upstream
+  * install CONTRIBUTORS file
+
+ -- Fab Stz <fabstz-it@yahoo.fr>  Mon, 30 Jan 2023 20:45:32 +0100
+
+w-scan-cpp (0~20220105-1) unstable; urgency=medium
+
+  * Initial release. (Closes: #1023169)
+
+ -- Fab Stz <fabstz-it@yahoo.fr>  Tue, 20 Dec 2022 22:33:03 +0100

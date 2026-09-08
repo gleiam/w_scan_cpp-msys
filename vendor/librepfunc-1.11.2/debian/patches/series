@@ -1,0 +1,7 @@
+# From upstream
+
+# Pending
+
+# Debian specific
+101-makefile_verbose.patch
+103-makefile_libs_multiarch_install_dir.patch
