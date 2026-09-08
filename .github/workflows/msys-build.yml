@@ -52,7 +52,7 @@ jobs:
       - name: --help-Gate (dist-Build lauffaehig)
         run: |
           set -euo pipefail
-          ./dist/w_scan_cpp-msys-x86_64/w_scan_cpp.exe --help > dist-help.txt
+          ./dist/w_scan_cpp-msys-x86_64/w_scan_cpp.exe --help > dist-help.txt 2>&1
           grep -q "w_scan_cpp Version" dist-help.txt
 
       - name: Artifact hochladen
