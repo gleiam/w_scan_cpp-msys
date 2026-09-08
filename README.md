@@ -3,6 +3,24 @@
 Baut `w_scan_cpp` unter Windows mit MSYS2 (msys-Toolchain, kein MinGW):
 SAT>IP-Tuning via vendored VDR + vdr-plugin-satip, Linux-DVB-Header als Shim.
 
+## Herkunft, Dank, Lizenz
+
+Dieses Repo ist ein Fork von
+[wirbel-at-vdr-portal/w_scan_cpp](https://github.com/wirbel-at-vdr-portal/w_scan_cpp)
+und enthält ausschließlich Ergänzungen für den MSYS2-Build (Patches, Skripte, CI);
+die Upstream-Quellen liegen unverändert in `w-scan-cpp-20260515+dfsg/`, Änderungen
+dazu als `patches/101-*` … `patches/112-*`.
+
+- Original-Autor: **Winfried Koehler („wirbel“)**, Projektseite:
+  <https://www.gen2vdr.de/wirbel/w_scan_cpp/index2.html>
+- Mitwirkende siehe Upstream-Datei `CONTRIBUTORS`.
+- `w_scan_cpp` basiert auf [VDR](https://www.tvdr.de) von Klaus Schmidinger,
+  [vdr-plugin-satip](https://github.com/rofafor/vdr-plugin-satip) von Rolf Ahrenberg
+  sowie dem VDR-Plugin wirbelscan – Dank an alle Beteiligten.
+- Lizenz: **GNU General Public License v2** (siehe `COPYING`, Upstream-Original).
+  Alle Dateien dieses Forks, die Upstream-Code enthalten oder davon abgeleitet sind,
+  stehen ebenfalls unter GPL-2.0.
+
 ## Schnellstart
 
 ```cmd
